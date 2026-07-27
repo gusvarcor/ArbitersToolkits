@@ -1,0 +1,26 @@
+# Entorno virtual
+.venv/
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos de Qt
+*.qmlc
+*.jsc
+
+# Logs
+logs/
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
