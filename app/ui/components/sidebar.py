@@ -11,8 +11,10 @@ class Sidebar(QFrame):
     def __init__(self):
         super().__init__()
 
+        # Debe coincidir con styles.qss
+        self.setObjectName("Sidebar")
+
         self.setFixedWidth(230)
-        self.setObjectName("sidebar")
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)

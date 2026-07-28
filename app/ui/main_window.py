@@ -48,3 +48,15 @@ class MainWindow(QMainWindow):
 
         # Status Bar
         self.setStatusBar(self.status_bar)
+
+        # ==========================
+        # Conectar navegación
+        # ==========================
+
+        self.sidebar.dashboard_btn.clicked.connect(
+            self.workspace.navigation.show_dashboard
+        )
+
+        self.sidebar.sti_btn.clicked.connect(
+            self.workspace.navigation.show_sti
+        )
