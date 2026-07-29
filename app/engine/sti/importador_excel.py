@@ -1,39 +1,37 @@
 from openpyxl import load_workbook
 
-from app.engine.sti.jugador import Jugador
+from app.engine.sti.formatos.google_forms import importar_google_forms
 
 
 def importar_excel(ruta_excel):
     """
-    Lee un archivo de Excel y devuelve
-    una lista de objetos Jugador.
+    Importador principal del STI.
+
+    Analiza los encabezados del Excel y selecciona
+    automáticamente el importador adecuado.
     """
 
     wb = load_workbook(ruta_excel, data_only=True)
     ws = wb.active
 
-    jugadores = []
+    # Leer encabezados
+    encabezados = [
+        str(celda.value).strip() if celda.value else ""
+        for celda in ws[1]
+    ]
 
-    # Empieza en la fila 2 porque la fila 1 son encabezados
-    for fila in ws.iter_rows(min_row=2, values_only=True):
+    # ==========================================
+    # Google Forms
+    # ==========================================
 
-        jugador = Jugador()
+    if "Nombre Completo" in encabezados:
+        return importar_google_forms(ws)
 
-        jugador.id = fila[0]
-        jugador.grupo = fila[1]
+    # ==========================================
+    # Formato desconocido
+    # ==========================================
 
-        jugador.apellido_paterno = fila[2] or ""
-        jugador.apellido_materno = fila[3] or ""
-        jugador.nombres = fila[4] or ""
-
-        jugador.rating = fila[5] or 0
-
-        jugador.nacimiento = fila[6]
-
-        jugador.genero = fila[7] or ""
-
-        jugador.pais = fila[8] or ""
-
-        jugadores.append(jugador)
-
-    return jugadores
+    raise ValueError(
+        "Formato de Excel no reconocido.\n\n"
+        "El STI todavía no tiene un importador para este tipo de archivo."
+    )

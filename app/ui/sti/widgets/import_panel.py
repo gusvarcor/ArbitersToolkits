@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QFileDialog,
     QLabel,
@@ -7,63 +7,43 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from app.engine.sti.importador_excel import importar_excel
+from app.engine.sti.sti_engine import STIEngine
 
 
 class ImportPanel(QWidget):
 
+    jugadores_importados = Signal(list)
+
     def __init__(self):
         super().__init__()
 
-        self.jugadores = []
+        # Motor del STI
+        self.engine = STIEngine()
 
         layout = QVBoxLayout(self)
         layout.setSpacing(15)
 
-        # ==========================================
-        # Título
-        # ==========================================
-
         titulo = QLabel("📥 Smart Tournament Import")
-        titulo.setAlignment(Qt.AlignLeft)
         titulo.setObjectName("DashboardTitle")
 
         descripcion = QLabel(
             "Importa un archivo de Excel para comenzar el proceso "
             "de identificación de jugadores."
         )
-
         descripcion.setWordWrap(True)
         descripcion.setObjectName("DashboardDescription")
 
-        # ==========================================
-        # Botón
-        # ==========================================
-
         self.btn_importar = QPushButton("Seleccionar archivo Excel")
-
         self.btn_importar.clicked.connect(self.importar_excel)
 
-        # ==========================================
-        # Información
-        # ==========================================
-
         self.lbl_archivo = QLabel("Archivo: Ninguno")
-
         self.lbl_jugadores = QLabel("Jugadores importados: 0")
-
-        # ==========================================
-        # Layout
-        # ==========================================
 
         layout.addWidget(titulo)
         layout.addWidget(descripcion)
-        layout.addSpacing(10)
         layout.addWidget(self.btn_importar)
-        layout.addSpacing(10)
         layout.addWidget(self.lbl_archivo)
         layout.addWidget(self.lbl_jugadores)
-        layout.addStretch()
 
     def importar_excel(self):
 
@@ -81,16 +61,16 @@ class ImportPanel(QWidget):
 
         try:
 
-            self.jugadores = importar_excel(archivo)
+            jugadores = self.engine.importar(archivo)
 
             self.lbl_jugadores.setText(
-                f"Jugadores importados: {len(self.jugadores)}"
+                f"Jugadores importados: {self.engine.total_jugadores()}"
             )
+
+            self.jugadores_importados.emit(jugadores)
 
         except Exception as e:
 
-            self.lbl_jugadores.setText(
-                "Error al importar el archivo."
-            )
+            self.lbl_jugadores.setText("Error al importar.")
 
             print(e)

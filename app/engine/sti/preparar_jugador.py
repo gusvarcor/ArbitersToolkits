@@ -1,4 +1,4 @@
-from Librerias.limpiar import crear_clave
+from app.engine.sti.limpiar import crear_clave
 
 
 def preparar_jugador(jugador):

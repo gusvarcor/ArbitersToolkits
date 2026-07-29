@@ -1,26 +1,27 @@
-# Entorno virtual
-.venv/
-
-# Caché de Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Archivos de VS Code
-.vscode/
+# Entornos virtuales
+.venv/
+venv/
+env/
 
-# Archivos de Qt
-*.qmlc
-*.jsc
-
-# Logs
-logs/
+# Base de datos local (si no quieres versionarla)
+# data/fide.db
 
 # Archivos temporales
 *.log
 *.tmp
 
-# Archivos del sistema
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Windows
 Thumbs.db
-.DS_Store
+Desktop.ini
