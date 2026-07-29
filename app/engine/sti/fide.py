@@ -1,0 +1,114 @@
+from app.core.config import AppConfig
+# ==========================================
+# ArbiterTools
+# Librería FIDE
+# ==========================================
+
+import sqlite3
+
+RUTA_DB = AppConfig.FIDE_DB
+
+
+def conectar():
+    """
+    Abre una conexión con la base FIDE.
+    """
+    return sqlite3.connect(RUTA_DB)
+
+
+def buscar_por_nombre(nombre, limite=30):
+    """
+    Busca jugadores cuyo nombre contenga el texto indicado.
+
+    Devuelve una lista de tuplas:
+    (fideid, nombre, pais, elo)
+    """
+
+    conexion = conectar()
+    cursor = conexion.cursor()
+
+    cursor.execute("""
+        SELECT
+            fideid,
+            nombre,
+            pais,
+            elo
+        FROM jugadores
+        WHERE nombre LIKE ?
+        ORDER BY nombre
+        LIMIT ?
+    """, (f"%{nombre}%", limite))
+
+    resultados = cursor.fetchall()
+
+    conexion.close()
+
+    return resultados
+
+
+def buscar_por_id(fideid):
+    """
+    Busca un jugador por su ID FIDE.
+    """
+
+    conexion = conectar()
+    cursor = conexion.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM jugadores
+        WHERE fideid = ?
+    """, (fideid,))
+
+    jugador = cursor.fetchone()
+
+    conexion.close()
+
+    return jugador
+def buscar_por_nombre_y_nacimiento(nombre, nacimiento=None, limite=20):
+    """
+    Busca jugadores por nombre y, si se proporciona, por año de nacimiento.
+
+    Devuelve una lista de tuplas:
+    (fideid, nombre, pais, elo, nacimiento)
+    """
+
+    conexion = conectar()
+    cursor = conexion.cursor()
+
+    if nacimiento:
+
+        cursor.execute("""
+            SELECT
+                fideid,
+                nombre,
+                pais,
+                elo,
+                nacimiento
+            FROM jugadores
+            WHERE nombre LIKE ?
+              AND nacimiento = ?
+            ORDER BY nombre
+            LIMIT ?
+        """, (f"%{nombre}%", nacimiento, limite))
+
+    else:
+
+        cursor.execute("""
+            SELECT
+                fideid,
+                nombre,
+                pais,
+                elo,
+                nacimiento
+            FROM jugadores
+            WHERE nombre LIKE ?
+            ORDER BY nombre
+            LIMIT ?
+        """, (f"%{nombre}%", limite))
+
+    resultados = cursor.fetchall()
+
+    conexion.close()
+
+    return resultados
