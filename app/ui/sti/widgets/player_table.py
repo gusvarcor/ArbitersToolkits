@@ -6,7 +6,6 @@ from PySide6.QtWidgets import (
     QHeaderView,
 )
 
-
 class PlayerTable(QWidget):
 
     def __init__(self):
@@ -15,9 +14,7 @@ class PlayerTable(QWidget):
         layout = QVBoxLayout(self)
 
         self.table = QTableWidget()
-
         self.table.setColumnCount(6)
-
         self.table.setHorizontalHeaderLabels([
             "#",
             "Apellidos",
@@ -38,44 +35,17 @@ class PlayerTable(QWidget):
 
         for fila, jugador in enumerate(jugadores):
 
-            print(vars(jugador))
             apellidos = jugador.apellido_paterno
-
             if getattr(jugador, "apellido_materno", ""):
                 apellidos += " " + jugador.apellido_materno
 
-            self.table.setItem(
-                fila,
-                0,
-                QTableWidgetItem(str(fila + 1))
-            )
+            pais = getattr(jugador, "federacion", None) or jugador.pais
+            rating = getattr(jugador, "elo_fide", None) or jugador.rating
+            estado = getattr(jugador, "estado", "Pendiente")
 
-            self.table.setItem(
-                fila,
-                1,
-                QTableWidgetItem(apellidos)
-            )
-
-            self.table.setItem(
-                fila,
-                2,
-                QTableWidgetItem(jugador.nombres)
-            )
-
-            self.table.setItem(
-                fila,
-                3,
-                QTableWidgetItem(str(jugador.pais))
-            )
-
-            self.table.setItem(
-                fila,
-                4,
-                QTableWidgetItem(str(jugador.rating))
-            )
-
-            self.table.setItem(
-                fila,
-                5,
-                QTableWidgetItem("Pendiente")
-            )
+            self.table.setItem(fila,0,QTableWidgetItem(str(fila+1)))
+            self.table.setItem(fila,1,QTableWidgetItem(apellidos))
+            self.table.setItem(fila,2,QTableWidgetItem(jugador.nombres))
+            self.table.setItem(fila,3,QTableWidgetItem(str(pais)))
+            self.table.setItem(fila,4,QTableWidgetItem(str(rating)))
+            self.table.setItem(fila,5,QTableWidgetItem(str(estado)))
