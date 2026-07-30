@@ -6,7 +6,7 @@ Motor principal del Smart Tournament Import (STI).
 
 from app.engine.sti.importador_excel import importar_excel
 from app.engine.sti.preparar_jugador import preparar_jugador
-from app.engine.sti.fide import buscar_por_nombre
+from app.engine.sti.fide import buscar_por_apellidos
 from app.engine.sti.comparador import comparar
 
 
@@ -62,7 +62,10 @@ class STIEngine:
         print("=" * 60)
         print(f"Jugador: {nombre_busqueda}")
 
-        candidatos = buscar_por_nombre(nombre_busqueda)
+        candidatos = buscar_por_apellidos(
+            jugador.apellido_paterno,
+            jugador.apellido_materno
+        )
 
         print(f"Candidatos encontrados: {len(candidatos)}")
 

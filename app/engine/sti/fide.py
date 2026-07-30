@@ -50,51 +50,32 @@ def buscar_por_nombre(nombre, limite=30):
 
 
 def buscar_por_apellidos(apellido_paterno, apellido_materno="", limite=30):
-    """
-    Busca candidatos FIDE utilizando únicamente los apellidos.
+    """Busca candidatos FIDE usando la columna nombre_normalizado."""
 
-    Se normalizan los apellidos para eliminar:
-    - acentos
-    - ñ
-    - diéresis
-    - caracteres especiales
-
-    Devuelve:
-        (fideid, nombre, pais, elo)
-    """
-
-    apellido_paterno = normalizar_nombre_fide(apellido_paterno)
-    apellido_materno = normalizar_nombre_fide(apellido_materno)
-
-    texto_busqueda = f"{apellido_paterno} {apellido_materno}".strip()
+    texto_busqueda = normalizar_nombre_fide(
+        f"{apellido_paterno} {apellido_materno}"
+    ).strip()
 
     conexion = conectar()
     cursor = conexion.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             fideid,
             nombre,
             pais,
             elo
         FROM jugadores
+        WHERE nombre_normalizado LIKE ?
         ORDER BY nombre
-    """)
+        LIMIT ?
+        """,
+        (f"%{texto_busqueda}%", limite),
+    )
 
-    candidatos = []
-
-    for fila in cursor.fetchall():
-
-        nombre_normalizado = normalizar_nombre_fide(fila[1])
-
-        if texto_busqueda in nombre_normalizado:
-            candidatos.append(fila)
-
-            if len(candidatos) >= limite:
-                break
-
+    candidatos = cursor.fetchall()
     conexion.close()
-
     return candidatos
 
 
