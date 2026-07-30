@@ -69,7 +69,13 @@ class STIEngine:
             jugador.elo_fide = elo
             jugador.confianza = resultado["confianza"]
             jugador.encontrado = True
-            jugador.estado = "ENCONTRADO"
+
+            if jugador.confianza == 100:
+                jugador.estado = "ENCONTRADO"
+            elif jugador.confianza >= 90:
+                jugador.estado = "REVISAR"
+            else:
+                jugador.estado = "PENDIENTE"
 
             print("\nMejor candidato")
             print("---------------------------")
