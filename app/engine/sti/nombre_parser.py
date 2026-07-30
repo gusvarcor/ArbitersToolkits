@@ -28,25 +28,30 @@ def parsear_nombre(nombre_completo: str) -> Jugador:
     if len(partes) == 0:
         return jugador
 
+    # Un solo elemento
     if len(partes) == 1:
         jugador.nombres = partes[0]
         return jugador
 
+    # Dos palabras:
+    # Nombre Apellido
     if len(partes) == 2:
-        jugador.apellido_paterno = partes[0]
-        jugador.nombres = partes[1]
+        jugador.nombres = partes[0]
+        jugador.apellido_paterno = partes[1]
         return jugador
 
+    # Tres palabras:
+    # Nombre ApellidoPaterno ApellidoMaterno
     if len(partes) == 3:
-        jugador.apellido_paterno = partes[0]
-        jugador.apellido_materno = partes[1]
-        jugador.nombres = partes[2]
+        jugador.nombres = partes[0]
+        jugador.apellido_paterno = partes[1]
+        jugador.apellido_materno = partes[2]
         return jugador
 
-    # Caso más común en México:
-    # Nombre(s) + Apellido paterno + Apellido materno
+    # Cuatro o más palabras:
+    # Nombre(s) + Apellido Paterno + Apellido Materno
+    jugador.nombres = " ".join(partes[:-2])
     jugador.apellido_paterno = partes[-2]
     jugador.apellido_materno = partes[-1]
-    jugador.nombres = " ".join(partes[:-2])
 
     return jugador
