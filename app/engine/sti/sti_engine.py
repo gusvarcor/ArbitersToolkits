@@ -43,6 +43,14 @@ class STIEngine:
         print("=" * 60)
         print(f"Jugador: {nombre_busqueda}")
 
+        # ==========================================
+        # DIAGNÓSTICO
+        # ==========================================
+        print("Apellido paterno :", repr(jugador.apellido_paterno))
+        print("Apellido materno :", repr(jugador.apellido_materno))
+        print("Nombres          :", repr(jugador.nombres))
+        print("==========================================")
+
         candidatos = buscar_por_apellidos(
             jugador.apellido_paterno,
             jugador.apellido_materno

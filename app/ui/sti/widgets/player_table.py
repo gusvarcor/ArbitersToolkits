@@ -8,10 +8,15 @@ from PySide6.QtWidgets import (
     QHeaderView,
 )
 
+from app.ui.sti.dialogs.candidate_selector_dialog import CandidateSelectorDialog
+
+
 class PlayerTable(QWidget):
 
     def __init__(self):
         super().__init__()
+
+        self.jugadores = []
 
         layout = QVBoxLayout(self)
 
@@ -32,6 +37,8 @@ class PlayerTable(QWidget):
 
         layout.addWidget(self.table)
 
+        # Doble clic sobre una fila
+        self.table.cellDoubleClicked.connect(self.al_doble_clic)
 
     def poner_item(self, fila, columna, texto, color):
         item = QTableWidgetItem(str(texto))
@@ -39,6 +46,8 @@ class PlayerTable(QWidget):
         self.table.setItem(fila, columna, item)
 
     def cargar_jugadores(self, jugadores):
+
+        self.jugadores = jugadores
 
         self.table.setRowCount(len(jugadores))
 
@@ -60,10 +69,18 @@ class PlayerTable(QWidget):
             else:
                 color = QColor(255, 220, 220)
 
-            self.poner_item(fila,0,fila+1,color)
-            self.poner_item(fila,1,apellidos,color)
-            self.poner_item(fila,2,jugador.nombres,color)
-            self.poner_item(fila,3,pais,color)
-            self.poner_item(fila,4,rating,color)
-            self.poner_item(fila,5,f"{confianza}%",color)
-            self.poner_item(fila,6,estado,color)
+            self.poner_item(fila, 0, fila + 1, color)
+            self.poner_item(fila, 1, apellidos, color)
+            self.poner_item(fila, 2, jugador.nombres, color)
+            self.poner_item(fila, 3, pais, color)
+            self.poner_item(fila, 4, rating, color)
+            self.poner_item(fila, 5, f"{confianza}%", color)
+            self.poner_item(fila, 6, estado, color)
+
+    def al_doble_clic(self, fila, columna):
+
+        jugador = self.jugadores[fila]
+
+        dialogo = CandidateSelectorDialog(jugador, self)
+
+        dialogo.exec()
