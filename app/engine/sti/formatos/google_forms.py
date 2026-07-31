@@ -1,12 +1,13 @@
 from app.engine.sti.jugador import Jugador
 from app.engine.sti.nombre_parser import parsear_nombre
 
-from app.engine.sti.nombre_formatos import (
-    APELLIDOS_NOMBRES
-)
+from app.engine.sti.nombre_formatos import AUTOMATICO
 
 
-def importar_google_forms(ws):
+def importar_google_forms(
+    ws,
+    formato_nombre=AUTOMATICO
+):
     """
     Importa un Excel generado por Google Forms.
 
@@ -30,19 +31,16 @@ def importar_google_forms(ws):
 
         nombre = str(fila[1] or "").strip()
 
-        # Google Forms genera:
-        #
-        # APELLIDOS NOMBRES
-        #
-        # Ejemplo:
-        #
-        # PEREZ LOPEZ JUAN CARLOS
-        #
         datos = parsear_nombre(
             nombre,
-            APELLIDOS_NOMBRES
+            formato_nombre
         )
-
+        print()
+        print("===================================")
+        print("FORMATO:", formato_nombre)
+        print("ENTRADA :", nombre)
+        print("SALIDA  :", datos.apellido_paterno, datos.apellido_materno, "|", datos.nombres)
+        print("===================================")
         jugador = Jugador()
 
         jugador.apellido_paterno = datos.apellido_paterno

@@ -9,14 +9,21 @@ from app.engine.sti.preparar_jugador import preparar_jugador
 from app.engine.sti.fide import buscar_por_apellidos
 from app.engine.sti.comparador import comparar
 
+from app.engine.sti.nombre_formatos import AUTOMATICO
+
 
 class STIEngine:
 
     def __init__(self):
         self.jugadores = []
 
-    def importar(self, archivo):
-        self.jugadores = importar_excel(archivo)
+    def importar(self, archivo, formato_nombre=AUTOMATICO):
+
+        self.jugadores = importar_excel(
+            archivo,
+            formato_nombre
+        )
+
         self.preparar()
 
         # Sprint 10:
@@ -70,40 +77,51 @@ class STIEngine:
         resultado = comparar(jugador, candidatos)
 
         if resultado["encontrado"]:
+
             fideid, nombre, pais, elo = resultado["mejor"]
 
             jugador.fide_id = fideid
             jugador.federacion = pais
             jugador.elo_fide = elo
             jugador.confianza = resultado["confianza"]
+
             jugador.encontrado = True
 
             if jugador.confianza == 100:
                 jugador.estado = "ENCONTRADO"
+
             elif jugador.confianza >= 90:
                 jugador.estado = "REVISAR"
+
             else:
                 jugador.estado = "PENDIENTE"
 
-            print("\nMejor candidato")
+            print()
+            print("Mejor candidato")
             print("---------------------------")
             print(f"Nombre     : {nombre}")
             print(f"FIDE ID    : {fideid}")
             print(f"Federación : {pais}")
             print(f"ELO        : {elo}")
             print(f"Confianza  : {resultado['confianza']}%")
+
         else:
+
             jugador.encontrado = False
             jugador.estado = "PENDIENTE"
-            print("\nNo hubo coincidencias.")
+
+            print()
+            print("No hubo coincidencias.")
 
         print("=" * 60)
 
     def buscar_primer_jugador(self):
+
         if self.jugadores:
             self.buscar_jugador(self.jugadores[0])
 
     def buscar_todos(self):
+
         for jugador in self.jugadores:
             self.buscar_jugador(jugador)
 

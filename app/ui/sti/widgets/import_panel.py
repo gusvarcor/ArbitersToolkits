@@ -9,6 +9,10 @@ from PySide6.QtWidgets import (
 
 from app.engine.sti.sti_engine import STIEngine
 
+from app.ui.sti.dialogs.import_wizard_dialog import (
+    ImportWizardDialog,
+)
+
 
 class ImportPanel(QWidget):
 
@@ -27,14 +31,20 @@ class ImportPanel(QWidget):
         titulo.setObjectName("DashboardTitle")
 
         descripcion = QLabel(
-            "Importa un archivo de Excel para comenzar el proceso "
-            "de identificación de jugadores."
+            "Importa un archivo de Excel para comenzar "
+            "el proceso de identificación de jugadores."
         )
+
         descripcion.setWordWrap(True)
         descripcion.setObjectName("DashboardDescription")
 
-        self.btn_importar = QPushButton("Seleccionar archivo Excel")
-        self.btn_importar.clicked.connect(self.importar_excel)
+        self.btn_importar = QPushButton(
+            "Seleccionar archivo Excel"
+        )
+
+        self.btn_importar.clicked.connect(
+            self.importar_excel
+        )
 
         self.lbl_archivo = QLabel("Archivo: Ninguno")
         self.lbl_jugadores = QLabel("Jugadores importados: 0")
@@ -47,6 +57,28 @@ class ImportPanel(QWidget):
 
     def importar_excel(self):
 
+        # ==========================================
+        # SMART IMPORT WIZARD
+        # ==========================================
+
+        wizard = ImportWizardDialog(self)
+
+        if not wizard.exec():
+            return
+
+        formato = wizard.formato_seleccionado()
+
+        print()
+        print("=" * 60)
+        print("SMART IMPORT WIZARD")
+        print("=" * 60)
+        print(f"Formato seleccionado: {formato}")
+        print("=" * 60)
+
+        # ==========================================
+        # Seleccionar archivo
+        # ==========================================
+
         archivo, _ = QFileDialog.getOpenFileName(
             self,
             "Seleccionar archivo Excel",
@@ -57,20 +89,28 @@ class ImportPanel(QWidget):
         if not archivo:
             return
 
-        self.lbl_archivo.setText(f"Archivo: {archivo}")
+        self.lbl_archivo.setText(
+            f"Archivo: {archivo}"
+        )
 
         try:
 
-            jugadores = self.engine.importar(archivo)
+            jugadores = self.engine.importar(
+                archivo,
+                formato
+            )
 
             self.lbl_jugadores.setText(
-                f"Jugadores importados: {self.engine.total_jugadores()}"
+                f"Jugadores importados: "
+                f"{self.engine.total_jugadores()}"
             )
 
             self.jugadores_importados.emit(jugadores)
 
         except Exception as e:
 
-            self.lbl_jugadores.setText("Error al importar.")
+            self.lbl_jugadores.setText(
+                "Error al importar."
+            )
 
             print(e)

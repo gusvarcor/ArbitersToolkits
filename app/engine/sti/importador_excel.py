@@ -2,8 +2,13 @@ from openpyxl import load_workbook
 
 from app.engine.sti.formatos.google_forms import importar_google_forms
 
+from app.engine.sti.nombre_formatos import AUTOMATICO
 
-def importar_excel(ruta_excel):
+
+def importar_excel(
+    ruta_excel,
+    formato_nombre=AUTOMATICO
+):
     """
     Importador principal del STI.
 
@@ -11,13 +16,25 @@ def importar_excel(ruta_excel):
     automáticamente el importador adecuado.
     """
 
-    wb = load_workbook(ruta_excel, data_only=True)
+    wb = load_workbook(
+        ruta_excel,
+        data_only=True
+    )
+
     ws = wb.active
 
     # Leer encabezados
+
     encabezados = [
-        str(celda.value).strip() if celda.value else ""
+
+        str(celda.value).strip()
+
+        if celda.value
+
+        else ""
+
         for celda in ws[1]
+
     ]
 
     # ==========================================
@@ -25,13 +42,20 @@ def importar_excel(ruta_excel):
     # ==========================================
 
     if "Nombre Completo" in encabezados:
-        return importar_google_forms(ws)
+
+        return importar_google_forms(
+            ws,
+            formato_nombre
+        )
 
     # ==========================================
     # Formato desconocido
     # ==========================================
 
     raise ValueError(
+
         "Formato de Excel no reconocido.\n\n"
+
         "El STI todavía no tiene un importador para este tipo de archivo."
+
     )
