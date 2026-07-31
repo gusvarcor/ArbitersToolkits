@@ -1,6 +1,10 @@
 from app.engine.sti.jugador import Jugador
 from app.engine.sti.nombre_parser import parsear_nombre
 
+from app.engine.sti.nombre_formatos import (
+    APELLIDOS_NOMBRES
+)
+
 
 def importar_google_forms(ws):
     """
@@ -26,8 +30,18 @@ def importar_google_forms(ws):
 
         nombre = str(fila[1] or "").strip()
 
-        # Parsear el nombre utilizando el motor del STI
-        datos = parsear_nombre(nombre)
+        # Google Forms genera:
+        #
+        # APELLIDOS NOMBRES
+        #
+        # Ejemplo:
+        #
+        # PEREZ LOPEZ JUAN CARLOS
+        #
+        datos = parsear_nombre(
+            nombre,
+            APELLIDOS_NOMBRES
+        )
 
         jugador = Jugador()
 
