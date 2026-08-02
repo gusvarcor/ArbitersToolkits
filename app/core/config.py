@@ -1,22 +1,18 @@
 """
 Configuración global de ArbitersToolkits.
-
-Este módulo centraliza la configuración general de la aplicación.
-En el futuro leerá y guardará estos datos desde un archivo JSON o una
-base de datos, pero por ahora utilizaremos valores por defecto.
 """
 
 from pathlib import Path
 
 
 class AppConfig:
+
     # ==========================================================
-    # Información de la aplicación
+    # Información general
     # ==========================================================
 
     APP_NAME = "ArbitersToolkits"
     APP_VERSION = "0.4.0-alpha1"
-
     ORGANIZATION = "ArbitersToolkits"
 
     # ==========================================================
@@ -26,7 +22,7 @@ class AppConfig:
     USER_NAME = "Gustavo"
 
     # ==========================================================
-    # Configuración general
+    # Configuración
     # ==========================================================
 
     LANGUAGE = "es"
@@ -35,14 +31,37 @@ class AppConfig:
     CURRENT_PROJECT = None
 
     # ==========================================================
-    # Rutas del proyecto
+    # Directorios
     # ==========================================================
 
-    # Carpeta raíz del proyecto
     BASE_DIR = Path(__file__).resolve().parents[2]
 
-    # Carpeta donde vivirán todos los datos
     DATA_DIR = BASE_DIR / "data"
 
-    # Base de datos FIDE
-    FIDE_DB = DATA_DIR / "fide.db"
+    DOWNLOADS_DIR = DATA_DIR / "downloads"
+
+    SQLITE_DIR = DATA_DIR / "sqlite"
+
+    DICTIONARIES_DIR = DATA_DIR / "dictionaries"
+
+    STATISTICS_DIR = DATA_DIR / "statistics"
+
+    ARCHIVE_DIR = SQLITE_DIR / "archive"
+
+    # ==========================================================
+    # Bases de datos
+    # ==========================================================
+
+    FIDE_DB = SQLITE_DIR / "fide.db"
+
+    SNI_DB = SQLITE_DIR / "sni.db"
+
+    TOURNAMENT_DB = SQLITE_DIR / "tournaments.db"
+
+    # ==========================================================
+    # URLs oficiales
+    # ==========================================================
+
+    FIDE_COMBINED_XML_URL = (
+        "https://ratings.fide.com/download/players_list_xml.zip"
+    )

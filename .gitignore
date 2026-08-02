@@ -1,27 +1,56 @@
+# ==========================
 # Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# ==========================
 
-# Entornos virtuales
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================
+# Virtual Environment
+# ==========================
+
 .venv/
 venv/
-env/
 
-# Base de datos local (si no quieres versionarla)
-# data/fide.db
-
-# Archivos temporales
-*.log
-*.tmp
-
+# ==========================
 # VS Code
+# ==========================
+
 .vscode/
 
-# PyCharm
-.idea/
+# ==========================
+# Logs
+# ==========================
 
+logs/
+*.log
+
+# ==========================
+# Backups
+# ==========================
+
+backups/
+*.zip
+
+# ==========================
+# Downloads FIDE
+# ==========================
+
+data/downloads/
+
+# ==========================
+# SQLite
+# ==========================
+
+data/sqlite/*.db
+
+# Mantener la carpeta
+!data/sqlite/.gitkeep
+
+# ==========================
 # Windows
+# ==========================
+
 Thumbs.db
 Desktop.ini
