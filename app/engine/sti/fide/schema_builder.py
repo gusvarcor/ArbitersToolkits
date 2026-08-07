@@ -19,14 +19,19 @@ from app.core.config import AppConfig
 
 class SchemaBuilder:
 
+    # ==========================================================
+    # Inicialización completa
+    # ==========================================================
+
     def initialize(self):
         """
-        Inicializa completamente la base de datos FIDE.
+        Crea la estructura de la base de datos.
         """
 
         connection = sqlite3.connect(AppConfig.FIDE_DB)
 
         try:
+
             self.create_players_table(connection)
             self.create_metadata_table(connection)
             self.create_indexes(connection)
@@ -34,7 +39,23 @@ class SchemaBuilder:
             connection.commit()
 
         finally:
+
             connection.close()
+
+    # ==========================================================
+    # Reconstrucción completa
+    # ==========================================================
+
+    def rebuild_database(self):
+        """
+        Elimina la base existente y la crea nuevamente.
+        """
+
+        if AppConfig.FIDE_DB.exists():
+
+            AppConfig.FIDE_DB.unlink()
+
+        self.initialize()
 
     # ==========================================================
     # Tabla players
