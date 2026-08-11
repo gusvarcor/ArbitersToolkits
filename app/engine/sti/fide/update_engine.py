@@ -3,20 +3,16 @@ Update Engine del FIDE Data Engine.
 
 Responsabilidad:
 
-Coordinar la actualización completa de la base FIDE.
-
-No implementa lógica de negocio.
-Únicamente coordina los módulos existentes.
+Coordinar toda la actualización de la base FIDE.
 """
 
-from pathlib import Path
-
-from app.core.config import AppConfig
+from app.core.result import EngineResult
 
 from app.engine.sti.fide.downloader import Downloader
+from app.engine.sti.fide.schema_builder import SchemaBuilder
+from app.engine.sti.fide.snapshot_manager import SnapshotManager
 from app.engine.sti.fide.importer import Importer
 from app.engine.sti.fide.metadata_manager import MetadataManager
-from app.engine.sti.fide.snapshot_manager import SnapshotManager
 from app.engine.sti.fide.integrity_checker import IntegrityChecker
 
 
@@ -25,107 +21,87 @@ class UpdateEngine:
     def __init__(self):
 
         self.downloader = Downloader()
-
         self.snapshot = SnapshotManager()
-
+        self.schema = SchemaBuilder()
         self.importer = Importer()
-
-        self.metadata = MetadataManager()
-
-        self.checker = IntegrityChecker()
 
     # ==========================================================
 
     def update(self):
 
-        print("=" * 70)
-        print("FIDE UPDATE ENGINE")
-        print("=" * 70)
-        print()
+        try:
 
-        # ------------------------------------------------------
-        # 1. Descargar
-        # ------------------------------------------------------
+            #
+            # 1. Descargar
+            #
+            result = self.downloader.download_latest()
 
-        print("1. Descargando lista FIDE...")
+            if not result.success:
+                return result
 
-        xml_file = self.downloader.download()
+            #
+            # 2. Leer metadata existente
+            #
+            metadata = MetadataManager()
 
-        print("OK")
-        print()
+            current_list = metadata.get("fide_list")
 
-        # ------------------------------------------------------
-        # 2. Snapshot
-        # ------------------------------------------------------
+            metadata.close()
 
-        if Path(AppConfig.FIDE_DB).exists():
+            #
+            # 3. Crear snapshot
+            #
+            if current_list:
 
-            print("2. Creando snapshot...")
+                try:
 
-            try:
+                    self.snapshot.create_snapshot(current_list)
 
-                snapshot = self.snapshot.create_snapshot()
+                except FileExistsError:
+                    pass
 
-                print(snapshot.name)
+            #
+            # 4. Reconstruir base
+            #
+            self.schema.rebuild_database()
 
-            except FileExistsError:
+            #
+            # 5. Importar jugadores
+            #
+            imported = self.importer.import_players()
 
-                print("Snapshot ya existente.")
+            #
+            # 6. Escribir metadata
+            #
+            metadata = MetadataManager()
 
-            print()
+            metadata.set("imported_players", imported)
 
-        # ------------------------------------------------------
-        # 3. Importar
-        # ------------------------------------------------------
+            if result.data is not None:
+                metadata.set("fide_list", str(result.data))
 
-        print("3. Importando jugadores...")
+            metadata.close()
 
-        imported = self.importer.import_players()
+            #
+            # 7. Verificar integridad
+            #
+            checker = IntegrityChecker()
 
-        print(f"{imported} jugadores importados.")
+            ok, message = checker.check()
 
-        print()
+            checker.close()
 
-        # ------------------------------------------------------
-        # 4. Metadata
-        # ------------------------------------------------------
+            if not ok:
+                return EngineResult.fail(message)
 
-        print("4. Actualizando metadata...")
+            return EngineResult.ok(
+                message="Actualización completada correctamente.",
+                data=imported
+            )
 
-        self.metadata.set(
-            "imported_players",
-            imported
-        )
+        except Exception as ex:
 
-        print("OK")
-        print()
-
-        # ------------------------------------------------------
-        # 5. Integridad
-        # ------------------------------------------------------
-
-        print("5. Verificando integridad...")
-
-        ok, message = self.checker.check()
-
-        if not ok:
-
-            raise RuntimeError(message)
-
-        print(message)
-
-        print()
-
-        print("=" * 70)
-        print("ACTUALIZACIÓN FINALIZADA")
-        print("=" * 70)
-
-        return True
-
-    # ==========================================================
-
-    def close(self):
-
-        self.metadata.close()
-
-        self.checker.close()
+            return EngineResult.fail(
+                message=str(ex),
+                error=ex
+            )

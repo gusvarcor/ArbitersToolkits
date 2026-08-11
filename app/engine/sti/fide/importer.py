@@ -16,7 +16,7 @@ from app.engine.sti.fide.writers.sqlite_writer import SQLiteWriter
 
 class Importer:
 
-    def __init__(self, limit=None, batch_size=1000):
+    def __init__(self, limit=None, batch_size=10000):
 
         self.limit = limit
         self.batch_size = batch_size
